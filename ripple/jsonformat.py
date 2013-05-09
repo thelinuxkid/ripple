@@ -7,7 +7,7 @@ ripple_epoch = datetime(2000, 1, 1, tzinfo=tz.tzutc())
 
 def drop(drops):
     """
-    Converts a string to drops. A drop the smallest unit in the Ripple
+    Converts a string to drops. A drop is the smallest unit in the Ripple
     currency (0.000001 XRP)
     """
     if not drops.isdigit():
@@ -16,8 +16,8 @@ def drop(drops):
                 drops=drops,
             )
         )
-    # Python will automatically cast to long integer for any value not
-    # in -sys.maxint - 1 <= x <= sys.maxint
+    # Python will automatically cast to a long integer for any x such
+    # that x < -sys.maxint-1 or x > sys.maxint
     drops = int(drops)
     return drops
 
