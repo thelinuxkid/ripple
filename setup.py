@@ -13,6 +13,9 @@ EXTRAS_REQUIRES = dict(
     con=[
         'requests>=1.2.0',
     ],
+    time=[
+        'python-dateutil>=2.1',
+    ],
 )
 
 # Tests always depend on all other requirements, except dev
