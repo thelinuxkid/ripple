@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 ripple_epoch = datetime(2000, 1, 1, tzinfo=tz.tzutc())
 
+
 def drop(drops):
     """
     Converts a string to drops. A drop is the smallest unit in the Ripple
@@ -20,6 +21,7 @@ def drop(drops):
     # that x < -sys.maxint-1 or x > sys.maxint
     drops = int(drops)
     return drops
+
 
 def totime(dt):
     """
@@ -49,6 +51,7 @@ def totime(dt):
     dt = math.ceil(dt)
     return long(dt)
 
+
 def fromtime(seconds):
     """
     Converts the number of seconds since the Ripple epoch to a
@@ -57,6 +60,7 @@ def fromtime(seconds):
     """
     dt = ripple_epoch + timedelta(seconds=seconds)
     return dt
+
 
 def utc_from_iso(dt_str, assume_local=False):
     """
