@@ -1,6 +1,6 @@
 import math
 
-from dateutil import tz
+from dateutil import tz, parser
 from datetime import datetime, timedelta
 
 ripple_epoch = datetime(2000, 1, 1, tzinfo=tz.tzutc())
@@ -56,4 +56,32 @@ def fromtime(seconds):
     Unix epoch or 2000-01-01T00:00:00+00:00
     """
     dt = ripple_epoch + timedelta(seconds=seconds)
+    return dt
+
+def utc_from_iso(dt_str, assume_local=False):
+    """
+    Convert an ISO-8601 formatted string to a datetime
+    object. Timezone information must be present unless assume_local
+    is True.
+    """
+    # dateutil.parser.parse returns today's date when fed the empty
+    # string
+    if dt_str == '':
+        raise ValueError('Value cannot be empty string')
+    dt = parser.parse(dt_str)
+    if dt.tzinfo is None:
+        if not assume_local:
+            # We cannot convert to UTC without knowing a timezone A
+            # lack of timezone implies local time.
+            # http://en.wikipedia.org/wiki/ISO_8601#Time_zone_designators
+            raise ValueError(
+                'Value must contain timezone information: '
+                '{dt}'.format(
+                    dt=dt.isoformat(),
+                )
+            )
+        dt = dt.replace(tzinfo=tz.tzlocal())
+
+    if dt.tzinfo.utcoffset(dt) is not None:
+        dt = dt.astimezone(tz.tzutc())
     return dt

@@ -1,5 +1,7 @@
 import sys
 
+import mock
+
 from datetime import datetime
 
 from dateutil import tz
@@ -89,3 +91,39 @@ def test_fromtime_simple():
     res = jsonformat.fromtime(421376124)
     expect = datetime(2013, 5, 9, 0, 55, 24, tzinfo=tz.tzutc())
     assert res == expect
+
+def test_utc_from_iso_simple():
+    dt = jsonformat.utc_from_iso('2011-11-16T18:36:06.795119-08:00')
+    expect = datetime(2011, 11, 17, 2, 36, 06, 795119, tz.tzutc())
+    assert dt == expect
+
+def test_utc_from_iso_utc():
+    dt = jsonformat.utc_from_iso('2011-10-12T19:55:58.345128+0000')
+    expect = datetime(2011, 10, 12, 19, 55, 58, 345128, tz.tzutc())
+    assert dt == expect
+
+@mock.patch('dateutil.tz.tzlocal')
+def test_utc_from_iso_local(fake_local):
+    fake_local.return_value = tz.tzoffset(None, -10800)
+    dt = jsonformat.utc_from_iso(
+        '2011-11-16T18:36:06.795119',
+        assume_local=True,
+    )
+    expect = datetime(2011, 11, 16, 21, 36, 06, 795119, tz.tzutc())
+    assert dt == expect
+
+def test_utc_from_empty():
+    with assert_raises(ValueError) as exc:
+        jsonformat.utc_from_iso('')
+    exc = exc.exception
+    expect = 'Value cannot be empty string'
+    assert exc.message == expect
+
+def test_utc_from_notz():
+    with assert_raises(ValueError) as exc:
+        jsonformat.utc_from_iso('2013-05-09T00:55:24')
+    exc = exc.exception
+    expect = (
+        'Value must contain timezone information: 2013-05-09T00:55:24'
+    )
+    assert exc.message == expect
